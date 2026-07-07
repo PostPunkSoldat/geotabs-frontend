@@ -14,8 +14,6 @@ export default function App(){
     soilType: 'Alluvial Plains',
     peakCooling_kW: '',
     peakHeating_kW: '',
-    gsHeatPumpCOP: 4.0,
-    soilConductivity_WpmK: 2.2,
     method: 'standard'
   })
   const [result, setResult] = useState(null)
@@ -87,7 +85,6 @@ export default function App(){
     doc.text(`Required Loop Length: ${result.ground_loop.loop_length_m} m`, 14, y); y += 5;
     doc.text(`Number of Boreholes: ${result.ground_loop.borehole_count} (100m deep each)`, 14, y); y += 5;
     doc.text(`Land Area Required: ${result.ground_loop.land_area_m2} sq.m (approx)`, 14, y); y += 5;
-    doc.text(`Soil Conductivity: ${inputs.soilConductivity_WpmK} W/m.K`, 14, y); y += 8;
 
     // Feasibility Score Breakdown
     doc.setFontSize(11);
@@ -116,9 +113,11 @@ export default function App(){
 
     doc.save(`${projectName || "GeoTABS"}_Feasibility_Report.pdf`);
   };
-
+ 
   function handleChange(e){
     const { name, value } = e.target
+    setInputs(prev => ({ ...prev, [name]: isNaN(value) ? value : (value === '' ? '' : Number(value)) }))
+  }
     
     // Update soil conductivity when soil type changes
     if(name === 'soilType'){
@@ -244,15 +243,14 @@ export default function App(){
         </div>
 
         <div>
-          <label style={{fontWeight:'bold',display:'block',marginBottom:5}}>Soil Type</label>
-          <select name='soilType' value={inputs.soilType} onChange={handleChange}
-                  style={{width:'100%',padding:8,border:'1px solid #cbd5e1',borderRadius:4}}>
-            <option value="Alluvial Plains">Alluvial Plains (2.2 W/m·K)</option>
-            <option value="Black Soil">Black Soil (1.8 W/m·K)</option>
-            <option value="Red Soil">Red Soil (1.6 W/m·K)</option>
-            <option value="Laterite">Laterite (1.4 W/m·K)</option>
-            <option value="Sandy">Sandy (2.5 W/m·K)</option>
-            <option value="Rocky/Hard">Rocky/Hard (3.0 W/m·K)</option>
+          <label>Soil Type</label><br/>
+          <select name='soilType' value={inputs.soilType} onChange={handleChange} style={{width:'100%'}}>
+            <option value="Alluvial Plains">Alluvial Plains</option>
+            <option value="Black Soil">Black Soil</option>
+            <option value="Red Soil">Red Soil</option>
+            <option value="Laterite">Laterite</option>
+            <option value="Sandy">Sandy</option>
+            <option value="Rocky/Hard">Rocky/Hard</option>
           </select>
         </div>
 
@@ -287,18 +285,6 @@ export default function App(){
                  style={{width:'100%',padding:8,border:'1px solid #cbd5e1',borderRadius:4}}/>
         </div>
 
-        <div>
-          <label style={{fontWeight:'bold',display:'block',marginBottom:5}}>GeoTABS COP</label>
-          <input name='gsHeatPumpCOP' type="number" step="0.1" value={inputs.gsHeatPumpCOP} onChange={handleChange}
-                 style={{width:'100%',padding:8,border:'1px solid #cbd5e1',borderRadius:4}}/>
-        </div>
-
-        <div>
-          <label style={{fontWeight:'bold',display:'block',marginBottom:5}}>Soil Conductivity (W/m·K)</label>
-          <input name='soilConductivity_WpmK' type="number" step="0.1" value={inputs.soilConductivity_WpmK} 
-                 onChange={handleChange}
-                 style={{width:'100%',padding:8,border:'1px solid #cbd5e1',borderRadius:4}}/>
-        </div>
 
       </div>
     </div>
@@ -383,7 +369,6 @@ export default function App(){
               <p><strong>Boreholes:</strong> {result.ground_loop.borehole_count} × 100m deep</p>
               <p><strong>Land Area:</strong> {result.ground_loop.land_area_m2} m²</p>
               <p><strong>Soil Type:</strong> {inputs.soilType}</p>
-              <p><strong>Thermal Output:</strong> {result.ground_loop.watts_per_meter} W/m</p>
             </div>
           </div>
 
