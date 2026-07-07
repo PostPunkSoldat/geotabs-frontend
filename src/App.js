@@ -114,31 +114,11 @@ export default function App(){
     doc.save(`${projectName || "GeoTABS"}_Feasibility_Report.pdf`);
   };
  
-  function handleChange(e){
+function handleChange(e){
     const { name, value } = e.target
     setInputs(prev => ({ ...prev, [name]: isNaN(value) ? value : (value === '' ? '' : Number(value)) }))
   }
     
-    // Update soil conductivity when soil type changes
-    if(name === 'soilType'){
-      const soilK = {
-        'Alluvial Plains': 2.2,
-        'Black Soil': 1.8,
-        'Red Soil': 1.6,
-        'Laterite': 1.4,
-        'Sandy': 2.5,
-        'Rocky/Hard': 3.0
-      }
-      setInputs(prev => ({ 
-        ...prev, 
-        soilType: value, 
-        soilConductivity_WpmK: soilK[value] || 2.0 
-      }))
-    } else {
-      setInputs(prev => ({ ...prev, [name]: isNaN(value) ? value : (value === '' ? '' : Number(value)) }))
-    }
-  }
-
   async function handleRun(){
     setLoading(true)
     setResult(null)
